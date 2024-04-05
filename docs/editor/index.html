@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>glTF Display</title>
+	<meta name="author" content="wzdong" />
+	<meta name="description" content="glTF 2.0 3D Model Preview Editor." />
+	<link rel="icon" type="image/ico" href="../favicon.ico" />
+  <script type="module" crossorigin src="../assets/editor-D3lhLv5T.js"></script>
+  <link rel="modulepreload" crossorigin href="../assets/ViewerConfigurator-B0eX2zaD.js">
+  <link rel="stylesheet" crossorigin href="../assets/editor-CajbHmVC.css">
+</head>
+<body>
+	<form method="dialog">
+		<button type="button" class="file-input">
+			<label for="fileInput">Upload</label>
+		</button>
+		<div class="url-input"><input id="urlInput" type="search" placeholder="Input glTF URL" />
+			<div class="url-recommend" hidden>
+				<h4>Recommend: </h4>
+				<ul>
+					<li>https://threejs.org/examples/models/gltf/LittlestTokyo.glb</li>
+					<li>https://threejs.org/examples/models/gltf/Soldier.glb</li>
+					<li>https://threejs.org/examples/models/gltf/Xbot.glb</li>
+					<li>https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb</li>
+					<li>../3d-sh/ShTvTower.gltf</li>
+				</ul>
+			</div>
+		</div>
+		<input id="fileInput" hidden type="file" accept=".gltf,.glb" placeholder="Upload glTF(.glb/.gltf)" />
+	</form>
+	<div class="loading" hidden>
+		<iframe title="loading" src="../?model=./loading/scene.gltf&rotate=30"></iframe>
+		<div class="progress"></div>
+	</div>
+</body>
+</html>
