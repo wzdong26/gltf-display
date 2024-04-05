@@ -22,6 +22,7 @@ export default defineConfig({
       },
     },
     sourcemap: true,
-    outDir: '../docs'
+    outDir: '../docs',
+    emptyOutDir: true,
   },
 })
