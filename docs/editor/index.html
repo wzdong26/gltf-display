@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
 	<meta charset="utf-8">
@@ -8,9 +8,9 @@
 	<meta name="author" content="wzdong" />
 	<meta name="description" content="glTF 2.0 3D Model Preview Editor." />
 	<link rel="icon" type="image/ico" href="../favicon.ico" />
-  <script type="module" crossorigin src="../assets/editor-D3lhLv5T.js"></script>
-  <link rel="modulepreload" crossorigin href="../assets/ViewerConfigurator-B0eX2zaD.js">
-  <link rel="stylesheet" crossorigin href="../assets/editor-CajbHmVC.css">
+  <script type="module" crossorigin src="../assets/editor-D3MbvD2v.js"></script>
+  <link rel="modulepreload" crossorigin href="../assets/ViewerConfigurator-CJsjDztE.js">
+  <link rel="stylesheet" crossorigin href="../assets/editor-CZ8K9H02.css">
 </head>
 
 <body>
@@ -22,8 +22,7 @@
 			<div class="url-recommend" hidden>
 				<h4>Recommend: </h4>
 				<ul>
-					<li>/loading/scene.gltf</li>
-					<li>https://wzdong26.github.io/assets/3d/3d-sh/ShTvTower.gltf</li>
+					<li>https://wzdong26.github.io/gltf-display/loading/scene.gltf</li>
 					<li>https://threejs.org/examples/models/gltf/RobotExpressive/RobotExpressive.glb</li>
 					<li>https://threejs.org/examples/models/gltf/LittlestTokyo.glb</li>
 					<li>https://threejs.org/examples/models/gltf/Soldier.glb</li>
@@ -34,8 +33,14 @@
 		<input id="fileInput" hidden type="file" accept=".gltf,.glb" placeholder="Upload glTF(.glb/.gltf)" />
 	</form>
 	<div class="loading" hidden>
-		<iframe title="loading" src="../?model=./loading/scene.gltf&rotate=30"></iframe>
+		<iframe title="loading" src="../?src=./loading/scene.gltf&rotate=30"></iframe>
 		<div class="progress"></div>
+	</div>
+	<div style="position: fixed; bottom: .3rem; width: 100%; text-align: center;">
+		<a href="https://github.com/wzdong26/gltf-display/">
+			<img style="width: 1em; margin-right: .1rem;" src="https://github.githubassets.com/pinned-octocat.svg"
+				alt="">GitHub
+		</a>
 	</div>
 </body>
 
