@@ -6,17 +6,22 @@ export class ViewerConfigurator {
   _conf = {
     bgColor: '#ffffff', bgOpacity: 1, enableCtrl: true, rotate: 0,
     lightColor: '#ffffff', lightIntensity: 1,
-    wireFrame: false, boxHelper: false, zoom: 0.5, alpha: 0.2,
+    wireframe: false, boxHelper: false, zoom: 0.5, alpha: 0.2,
     animationSpeed: 1
   }
-  /** @type {typeof this._conf} */
+  /** @type {typeof this._conf & { src: string; animations: string[]; }} */
   conf = {}
-  constructor(addDefaultConf) {
+  /** @param {{ defaultConf: boolean; container: Element; }} */
+  constructor({ defaultConf, container } = {}) {
     const canvas = document.createElement('canvas')
-    canvas.style.display = 'block'
     this.viewer = new Viewer({ renderer: { canvas } })
-    document.body.appendChild(canvas)
-    if (addDefaultConf) {
+    {
+      canvas.style.display = 'block'
+      canvas.style.width = '100%'
+      canvas.style.height = '100%'
+    }
+    (container ?? document.body).appendChild(canvas)
+    if (defaultConf) {
       this.conf = this._conf
     }
     this.watchConf()
@@ -38,10 +43,13 @@ export class ViewerConfigurator {
       lightIntensity(intensity) {
         viewer.setLight({ intensity })
       },
+      src(url) {
+        viewer.loadGLTF(url)
+      },
       model([url, blobs] = []) {
         viewer.loadGLTF(url, blobs)
       },
-      wireFrame(v) {
+      wireframe(v) {
         viewer.gltfWireFrame(v)
       },
       boxHelper(v) {

@@ -13,14 +13,21 @@ function getSearchParams() {
   const { searchParams } = new URL(href)
   const searchP = Object.fromEntries(searchParams.entries())
 
-  if (!searchP.model) {
-    alert('未指定glTF，请在url query串中添加model参数！')
+  if (!searchP.src) {
+    const el = document.createElement('div')
+    el.innerText = '未指定glTF，请在url query串中添加model参数！'
+    el.style.position = 'fixed'
+    el.style.top = 0
+    el.style.width = '100vw'
+    el.style.textAlign = 'center'
+    el.style.fontSize = '3rem'
+    el.style.color = 'red'
+    document.body.append(el)
     return {}
   }
 
-  searchP.model = [searchP.model]
   searchP.enableCtrl = searchP.enableCtrl != null
-    ;['boxHelper', 'wireFrame'].forEach((e) => {
+    ;['boxHelper', 'wireframe'].forEach((e) => {
       if (searchP[e] != null) {
         searchP[e] = true
       }

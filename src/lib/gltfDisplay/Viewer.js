@@ -51,7 +51,7 @@ export class Viewer {
   _gltfState = {
     zoom: 0.5,
     alpha: 0.2,
-    wireFrame: false,
+    wireframe: false,
     /** @type {BoxHelper} */
     boxHelper: null,
     /** @type {AnimationMixer & {destroy: () => void}} */
@@ -127,8 +127,8 @@ export class Viewer {
     this.scene.add(this.gltf.scene)
 
     this.gltfAlignCenter()
-    const { wireFrame, boxHelper } = this._gltfState
-    wireFrame && this.gltfWireFrame(wireFrame)
+    const { wireframe, boxHelper } = this._gltfState
+    wireframe && this.gltfWireFrame(wireframe)
     boxHelper?.setFromObject(this.gltf.scene)
     this.gltfAnimate()
 
@@ -170,7 +170,7 @@ export class Viewer {
   }
   /** @param {boolean} wireframe */
   gltfWireFrame(wireframe) {
-    this._gltfState.wireFrame = wireframe
+    this._gltfState.wireframe = wireframe
     if (!this.gltf) return false
     const model = this.gltf.scene
     model.traverse((node) => {

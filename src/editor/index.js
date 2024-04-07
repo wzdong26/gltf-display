@@ -10,7 +10,7 @@ const [fileInput, urlInput] = form
 const gui = new GUI()
 gui.close()
 
-const configurator = new Configurator(true)
+const configurator = new Configurator({ defaultConf: true })
 const { viewer, conf } = configurator
 
   ;[form, viewer.canvas].map(e =>
@@ -55,7 +55,7 @@ const { addScreenCaptureItem, addShareItem } = (function addBasicFolder() {
       shareItem = modelUrl && basicFolder.add({
         share() {
           if (!modelUrl) return
-          let search = `model=${encodeURIComponent(modelUrl)}&`
+          let search = `src=${encodeURIComponent(modelUrl)}&`
           const { model, animations, bgColor, bgOpacity, lightColor, lightIntensity, ...newConf } = conf
           search += animations ? `animations=${encodeURIComponent(animations.join(','))}&` : ''
           search += `bgColor=${encodeURIComponent(bgColor) + ',' + encodeURIComponent(bgOpacity)}&`
@@ -87,7 +87,7 @@ const { addScreenCaptureItem, addShareItem } = (function addBasicFolder() {
 
 {
   const modelFolder = gui.addFolder('Model')
-  modelFolder.add(conf, 'wireFrame')
+  modelFolder.add(conf, 'wireframe')
   modelFolder.add(conf, 'boxHelper')
   modelFolder.add(conf, 'zoom', 0, 2)
   modelFolder.add(conf, 'alpha', 0, 2)

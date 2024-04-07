@@ -11,7 +11,7 @@ canvas {
   display: block;
 }
 form {
-  position: absolute;
+  position: fixed;
   top: 0;
   width: 100%;
   height: 100%;
@@ -33,6 +33,7 @@ form {
     border-radius: 0.8rem;
     color: #fff;
     font-size: min(21vw, 5rem);
+    user-select: none;
     > label {
       display: block;
       padding: 1rem 0;
@@ -118,6 +119,7 @@ form {
   flex-direction: column;
   justify-content: center;
   align-items: center;
+  user-select: none;
   > iframe {
     margin-top: -5rem;
     border: 0;
