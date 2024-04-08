@@ -76,6 +76,11 @@ conf.src = "https://wzdong26.github.io/gltf-display/loading/scene.gltf";
 conf.rotate = 30;
 ```
 
+### 代码示例：
+
+- [一个 3D loading](https://code.juejin.cn/pen/7355343218529009714)
+- [加载动画及动画切换](https://code.juejin.cn/pen/7355029076492910642)
+
 ## API
 
 gltf-display 采用 jsDoc 类型注解，保证在开发过程中舒适的代码提示。

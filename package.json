@@ -1,8 +1,9 @@
 {
   "name": "gltf-display",
+  "description": "💡 An easy glTF preview package.",
   "private": false, 
   "author": "wzdong",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -19,5 +20,13 @@
   "dependencies": {
     "dat.gui": "0.7.9",
     "three": "0.162.0"
-  }
+  },
+  "keywords": [
+    "glTF"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wzdong26/gltf-display/"
+  },
+  "bugs": "https://github.com/wzdong26/-wzdong/issues"
 }
