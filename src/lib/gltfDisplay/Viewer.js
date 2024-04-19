@@ -281,6 +281,7 @@ function initGLTFLoader({
   }
   renderer && ktx2LoaderDetectSupport(renderer)
   const loader = new GLTFLoader(manager)
+    .setCrossOrigin('anonymous')
     .setDRACOLoader(dracoLoader)
     .setKTX2Loader(ktx2Loader)
     .setMeshoptDecoder(MeshoptDecoder)
