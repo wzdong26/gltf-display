@@ -1,6 +1,6 @@
 import { Viewer } from './Viewer.js'
 
-export class ViewerConfigurator {
+export class Configurator {
   /** @type {Viewer} */
   viewer
   _conf = {

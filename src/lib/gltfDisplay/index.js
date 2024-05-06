@@ -1,2 +1,2 @@
 export * from './Viewer'
-export { ViewerConfigurator as Configurator } from './ViewerConfigurator'
+export * from './Configurator'

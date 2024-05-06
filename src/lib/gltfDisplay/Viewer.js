@@ -54,7 +54,7 @@ export class Viewer {
     wireframe: false,
     /** @type {BoxHelper} */
     boxHelper: null,
-    /** @type {AnimationMixer & {destroy: () => void}} */
+    /** @type {AnimationMixer & {dispose: () => void}} */
     mixer: null,
     /** @type {string[]} */
     animations: null,
@@ -67,10 +67,11 @@ export class Viewer {
     this.scene = new Scene()
     this.camera = new PerspectiveCamera(fov ?? 75, 2, near ?? 0.1, far ?? 10000)
     this.renderer = new WebGLRenderer({ ...renderer, antialias: true, alpha: true })
+    this.renderer.setPixelRatio(window.devicePixelRatio)
     this.canvas = this.renderer.domElement
     this.controls = new OrbitControls(this.camera, this.canvas)
     this.controls.addEventListener('change', this.render.bind(this))
-    window?.addEventListener('resize', this.render.bind(this))
+    window.addEventListener('resize', this.render.bind(this))
     this.light = new AmbientLight()
     this.scene.add(this.light)
     GLTF_LOADER.ktx2LoaderDetectSupport(this.renderer)
@@ -78,7 +79,7 @@ export class Viewer {
   render = rafDebounce(({ delta }, ...args) => {
     this._resizeToDisplaySize()
     this.controls.update()
-    this._gltfState.mixer && this._gltfState.mixer.update(delta / 1000)
+    this._gltfState.mixer?.update(delta / 1000)
     this.renderer.render(this.scene, this.camera)
   })
   /**@private */
@@ -117,6 +118,18 @@ export class Viewer {
     intensity != null && (this.light.intensity = intensity)
     this.render()
   }
+  dispose() {
+    this.controls.dispose()
+    this.light.dispose()
+    this.renderer.dispose()
+    const { boxHelper } = this._gltfState
+    boxHelper.dispose()
+    this.mixer().dispose?.()
+    const { gltf } = this
+    gltf && this.scene.remove(gltf.scene)
+    this.canvas.remove()
+  }
+
   /**
    * @param {string} url 
    * @param {Record<string, Blob>} blobs 
@@ -124,6 +137,7 @@ export class Viewer {
   async loadGLTF(url, blobs) {
     this.unloadGLTF()
     this.gltf = await GLTF_LOADER.load(url, blobs)
+    this.analyze();
     this.scene.add(this.gltf.scene)
 
     this.gltfAlignCenter()
@@ -136,15 +150,47 @@ export class Viewer {
     return this.gltf
   }
   unloadGLTF() {
-    this.mixer().destroy?.()
+    this.mixer().dispose?.()
     const { gltf } = this
     gltf && this.scene.remove(gltf.scene)
     this.gltf = null
     this.render()
     return !gltf
   }
+  analyze() {
+    if (!this.gltf) return false
+    const { scene: model } = this.gltf;
+    // 统计Meshes
+    const vertices = {}
+    model.traverse((child) => {
+      if (child.isMesh) {
+        console.log(child)
+        console.log(`Mesh Name: ${child.name}`);
+        console.log(`Vertices Count: ${child.geometry.attributes.position.count}`);
+        vertices[child.name] = child.geometry.attributes.position.count
+        // 注意：GPU size 和其他硬件相关的尺寸可能需要根据材质和平台具体计算，
+        // 这里无法直接给出，但可以根据顶点数、索引数和纹理大小等估算。
 
-  /** @param {{zoom: number; alpha: number}} */
+        // 查看材质信息
+        if (child.material) {
+          const maps = child.material.map || {};
+          Object.keys(maps).forEach((key) => {
+            const map = maps[key];
+            if (map && map.image) {
+              console.log(`Texture Name: ${key}`);
+              console.log(`Resolution: ${map.image.width}x${map.image.height}`);
+              // 计算Texture size 和 GPU size 需要考虑压缩比等因素，此处简化处理
+            }
+          });
+        }
+      }
+    });
+    const verticesall = Object.values(vertices).reduce((r, e) => r + e, 0)
+    console.log('verticesall', verticesall)
+    // 其他统计，如GL Primitives数量等可能需要根据具体的属性进一步分析
+  }
+
+  /** 模型场景居中显示 @param {{zoom: number; alpha: number}} */
   gltfAlignCenter({ zoom, alpha } = {}) {
     const { _gltfState } = this
     if (zoom != null) _gltfState.zoom = zoom
@@ -203,6 +249,7 @@ export class Viewer {
   mixer() {
     const { mixer, animTimeScale } = this._gltfState
     if (mixer) return mixer
+    /** @type {AnimationMixer & {dispose?: () => void}} */
     const nullRst = Object.defineProperties({ timeScale: animTimeScale }, {
       timeScale: {
         set: (v) => {
@@ -221,7 +268,7 @@ export class Viewer {
     }
     const timer = setInterval(this.render.bind(this))
     return Object.assign(mMixer, {
-      destroy: () => {
+      dispose: () => {
         clearInterval(timer)
         mMixer.stopAllAction()
         this._gltfState.animations = null
