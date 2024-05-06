@@ -10,8 +10,18 @@ const [fileInput, urlInput] = form
 const gui = new GUI()
 gui.close()
 
-const configurator = new Configurator({ defaultConf: true })
-const { viewer, conf } = configurator
+keyboardEvt();
+function keyboardEvt() {
+  document.addEventListener('keydown', function (event) {
+    const { key, ctrlKey, altKey } = event;
+    if (key === 'g' && ctrlKey) {
+      event.preventDefault();
+      form.hidden = !form.hidden;
+    }
+  });
+}
+
+const { viewer, conf } = new Configurator({ defaultConf: true })
 
   ;[form, viewer.canvas].map(e =>
     e.addEventListener('touchend', gui.close.bind(gui))
