@@ -1,7 +1,7 @@
 {
   "name": "gltf-display",
   "description": "💡 An easy glTF preview package.",
-  "private": false, 
+  "private": false,
   "author": "wzdong",
   "version": "0.0.2",
   "type": "module",
@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "dat.gui": "0.7.9",
+    "gltf-validator": "^2.0.0-dev.3.9",
     "three": "0.162.0"
   },
   "keywords": [
