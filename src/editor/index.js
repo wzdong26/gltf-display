@@ -1,11 +1,13 @@
 
-import { Configurator, onGLTFLoad } from '@lib/gltfDisplay'
-import { readDirFiles } from '@lib/readDirFiles.js'
+import { Configurator } from '@lib/gltfDisplay'
+import { readDirFiles } from '@lib/readDirFiles'
+import { saveBlob } from '@lib/saveBlob'
+import { validGLTF } from '@lib/validGLTF'
 import { GUI } from 'dat.gui'
+import { showInfo } from './styles'
 import './index.css'
 
 const form = document.querySelector('form')
-const [fileInput, urlInput] = form
 
 const gui = new GUI()
 gui.close()
@@ -34,17 +36,6 @@ const { addScreenCaptureItem, addShareItem } = (function addBasicFolder() {
       form.hidden = !form.hidden
     }
   }, 'home')
-  const saveBlob = (function () {
-    const a = document.createElement('a')
-    document.body.appendChild(a)
-    a.style.display = 'none'
-    return function saveData(blob, fileName) {
-      const url = URL.createObjectURL(blob)
-      a.href = url
-      a.download = fileName
-      a.click()
-    }
-  }())
 
   let screenCaptureItem, shareItem
   return {
@@ -137,90 +128,25 @@ const loadGLTF = (...p) => {
     addScreenCaptureItem()
     addAnimationsGUI(animations)
     form.hidden = true
+    gui.open()
   }, (e) => {
     console.error('Load glTF error:', e)
     form.hidden = false
+  })
+  validGLTF(...p).then(e => {
+    console.log(e)
+    const { info } = e
+    const { resources, ...ifo } = info
+    showInfo(ifo)
   })
 }
 
 onUploadGLTF(loadGLTF, console.error)
 onDragDropGLTF(loadGLTF, console.error)
 
-  // =================== loading ===================
-  ; (function createLoading() {
-    const loadingT = document.querySelector('.loading')
-
-    const progress = loadingT.querySelector('.progress')
-    document.createElement('div')
-
-    setLoading(false)
-
-    let startCount
-    onGLTFLoad('onStart', (url, loaded, total) => {
-      startCount = total
-      setLoading(true)
-    })
-    let _total
-    // 加载loading
-    onGLTFLoad('onLoading', (evt) => {
-      const { loaded, total = _total, lengthComputable } = evt
-      progress.style.setProperty('--progress', Math.min((loaded / total).toFixed(3), 1) * 0.7)
-      _total = total
-    })
-    // 渲染loading
-    onGLTFLoad('onProgress', (url, loaded, total) => {
-      const v = ((loaded - startCount) / (total - startCount)).toFixed(3) * 0.3 + 0.7
-      progress.style.setProperty('--progress', v)
-    })
-      ;['onLoad', 'onError'].map(e => onGLTFLoad(e, () => setLoading(false)))
-
-    function setLoading(flag) {
-      loadingT.hidden = !flag
-      progress.style.setProperty('--progress', +!flag)
-    }
-  })()
-
-  // ================== gltf input ===================
-  ; (function onUrlInput() {
-    const urlDemo = document.querySelector('.url-recommend')
-    const inputEvent = new Event('input', { bubbles: true })
-    urlDemo.addEventListener('click', ({ target }) => {
-      if (target.tagName === 'LI') {
-        urlInput.value = target.innerText
-        urlInput.dispatchEvent(inputEvent)
-        urlInput.scrollBy({ left: 999 })
-      }
-    })
-    urlInput.addEventListener('input', ({ target }) => {
-      fileInput.setAttribute('type', target.value ? 'submit' : 'button')
-      const [label] = fileInput.children
-      label.setAttribute('for', target.value ? '' : 'fileInput')
-      label.innerHTML = target.value ? '<output>Submit</output>' : 'Upload'
-      urlDemo.hidden = !!target.value
-      urlDemo.hidden && (isPointerover = false)
-    })
-    urlInput.addEventListener('focus', ({ target }) => {
-      if (!target.value) {
-        urlDemo.hidden = false
-      }
-    })
-    urlInput.addEventListener('blur', () => {
-      if (!isPointerover) {
-        urlDemo.hidden = true
-      }
-    })
-    let isPointerover
-    urlDemo.addEventListener('pointerenter', () => {
-      isPointerover = true
-    })
-    urlDemo.addEventListener('pointerleave', (evt) => {
-      isPointerover = evt.pointerType !== 'mouse'
-    })
-  })()
-
 function onUploadGLTF(onLoad, onError) {
-  const fileInputOrigin = document.getElementById('fileInput')
-  fileInputOrigin.addEventListener('change', ({ target }) => {
+  const [fileBtn, urlInput, fileInput] = form
+  fileInput.addEventListener('change', ({ target }) => {
     const { files } = target
     for (const file of files) {
       if (file.name.match(/\.gl(b|tf)$/)) {

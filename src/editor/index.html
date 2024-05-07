@@ -11,6 +11,12 @@
 </head>
 
 <body>
+	<!-- gltf info: support local upload & url input -->
+	<div class="info-panel">
+		<h3>glTF Info<button class="info-panel-btn"></button></h3>
+		<div class="gltf-info"></div>
+	</div>
+	<!-- gltf form: support local upload & url input -->
 	<form method="dialog">
 		<button type="button" class="file-input">
 			<label for="fileInput">Upload</label>
@@ -30,12 +36,15 @@
 		<input id="fileInput" hidden type="file" accept=".gltf,.glb" placeholder="Upload glTF(.glb/.gltf)" />
 		<p>按住 Ctrl+G 可弹出 / 隐藏搜索框</p>
 	</form>
+	<!-- loading -->
 	<div class="loading" hidden>
 		<iframe title="loading" src="../?src=./loading/scene.gltf&rotate=30"></iframe>
 		<div class="progress"></div>
 	</div>
+	<!-- bottom info -->
 	<div style="position: fixed; bottom: .3rem; width: 100%; text-align: center;">
-		<a href="https://github.com/wzdong26/gltf-display/">
+		<a href="https://github.com/wzdong26/gltf-display/"
+			style="display: flex; justify-content: center; align-items: center;">
 			<img style="width: 1em; margin-right: .1rem;" src="https://github.githubassets.com/pinned-octocat.svg"
 				alt="">GitHub
 		</a>

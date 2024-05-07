@@ -104,6 +104,55 @@ form {
   align-items: center;
   font-size: 5rem;
 }
+
+.info-panel {
+  position: fixed;
+  left: 10px;
+  top: 10px;
+  padding: 20px;
+  background: #0000006a;
+  color: #ffffff;
+  border-radius: 6px;
+  max-width: min(80vw, 330px);
+  max-height: 80vh;
+  overflow-y: auto;
+  > h3 {
+    margin: unset;
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    > button {
+      all: unset;
+      cursor: pointer;
+      background: unset;
+      padding: 0 4px;
+      border: #b7b7b7 1px solid;
+      width: 1em;
+      height: 1em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border-radius: 999px;
+    }
+  }
+  > .gltf-info {
+    margin-top: 10px;
+    > ul {
+      all: unset;
+      > li {
+        margin-left: 1em;
+        > :first-child {
+          color: #e3e3e3;
+        }
+        > :last-child {
+          font-weight: bold;
+        }
+      }
+    }
+  }
+}
+
 .loading {
   position: fixed;
   z-index: 2;
