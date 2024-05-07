@@ -1,5 +1,5 @@
 
-import { Configurator } from '@lib/gltfDisplay'
+import { Configurator, onGLTFLoad } from '@lib/gltfDisplay'
 import { readDirFiles } from '@lib/readDirFiles'
 import { saveBlob } from '@lib/saveBlob'
 import { validGLTF } from '@lib/validGLTF'
@@ -124,7 +124,9 @@ function addAnimationsGUI(animations) {
 }
 
 const loadGLTF = (...p) => {
-  viewer.loadGLTF(...p).then(({ animations }) => {
+  const { loadingTime, progressTime, cleaup } = calcLoadTime()
+  const pending = viewer.loadGLTF(...p)
+  pending.then(({ animations }) => {
     addScreenCaptureItem()
     addAnimationsGUI(animations)
     form.hidden = true
@@ -133,12 +135,43 @@ const loadGLTF = (...p) => {
     console.error('Load glTF error:', e)
     form.hidden = false
   })
-  validGLTF(...p).then(e => {
-    console.log(e)
+  pending.then(cleaup)
+  validGLTF(...p).then(async e => {
     const { info } = e
     const { resources, ...ifo } = info
-    showInfo(ifo)
+    await pending;
+    showInfo({ ...ifo, loadingTime: loadingTime(), progressTime: progressTime() })
   })
+}
+
+function calcLoadTime() {
+  const cleaup0 = onGLTFLoad('onStart', (evt) => {
+    loadingTime.first ??= performance.now()
+  })
+  // 加载loading
+  let loadingTime = {}
+  const cleaup1 = onGLTFLoad('onLoading', (evt) => {
+    const nowTime = performance.now()
+    loadingTime.first ??= nowTime
+    loadingTime.gap = nowTime - loadingTime.first
+    progressTime.first = nowTime
+  })
+  // 渲染loading
+  let progressTime = {}
+  const cleaup2 = onGLTFLoad('onProgress', (url, loaded, total) => {
+    const nowTime = performance.now()
+    progressTime.first ??= loadingTime.last
+    progressTime.gap = nowTime - progressTime.first
+  })
+  return {
+    loadingTime: () => +((loadingTime.gap).toFixed(2)),
+    progressTime: () => +((progressTime.gap).toFixed(2)),
+    cleaup() {
+      cleaup0()
+      cleaup1()
+      cleaup2()
+    }
+  }
 }
 
 onUploadGLTF(loadGLTF, console.error)
