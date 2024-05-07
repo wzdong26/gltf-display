@@ -29,10 +29,23 @@ const GLTF_LOADER = initGLTFLoader()
 /**
  * @type {<T extends 'onProgress' | 'onStart' | 'onError' | 'onLoad' | 'onLoading'>(evtName: T, fn: typeof GLTF_LOADER[T]) => () => void}
  */
-export const onGLTFLoad = (evtName, fn) => {
-  GLTF_LOADER[evtName] = fn
-  return () => { GLTF_LOADER.onProgress = null }
-}
+export const onGLTFLoad = (() => {
+  const listeners = {
+    'onProgress': [], 'onStart': [], 'onError': [], 'onLoad': [], 'onLoading': []
+  }
+  Object.keys(listeners).forEach((k) => {
+    GLTF_LOADER[k] = (...e) => {
+      listeners[k].forEach(c => c?.(...e))
+    }
+  })
+  return (evtName, fn) => {
+    listeners[evtName].push(fn)
+    return () => {
+      const l = listeners[evtName]
+      l.splice(l.indexOf(fn), 1)
+    }
+  }
+})()
 
 export class Viewer {
   /** @property {Scene} */
@@ -137,7 +150,6 @@ export class Viewer {
   async loadGLTF(url, blobs) {
     this.unloadGLTF()
     this.gltf = await GLTF_LOADER.load(url, blobs)
-    this.analyze();
     this.scene.add(this.gltf.scene)
 
     this.gltfAlignCenter()
@@ -156,38 +168,6 @@ export class Viewer {
     this.gltf = null
     this.render()
     return !gltf
-  }
-  analyze() {
-    if (!this.gltf) return false
-    const { scene: model } = this.gltf;
-    // 统计Meshes
-    const vertices = {}
-    model.traverse((child) => {
-      if (child.isMesh) {
-        console.log(child)
-        console.log(`Mesh Name: ${child.name}`);
-        console.log(`Vertices Count: ${child.geometry.attributes.position.count}`);
-        vertices[child.name] = child.geometry.attributes.position.count
-        // 注意：GPU size 和其他硬件相关的尺寸可能需要根据材质和平台具体计算，
-        // 这里无法直接给出，但可以根据顶点数、索引数和纹理大小等估算。
-
-        // 查看材质信息
-        if (child.material) {
-          const maps = child.material.map || {};
-          Object.keys(maps).forEach((key) => {
-            const map = maps[key];
-            if (map && map.image) {
-              console.log(`Texture Name: ${key}`);
-              console.log(`Resolution: ${map.image.width}x${map.image.height}`);
-              // 计算Texture size 和 GPU size 需要考虑压缩比等因素，此处简化处理
-            }
-          });
-        }
-      }
-    });
-    const verticesall = Object.values(vertices).reduce((r, e) => r + e, 0)
-    console.log('verticesall', verticesall)
-    // 其他统计，如GL Primitives数量等可能需要根据具体的属性进一步分析
   }
 
   /** 模型场景居中显示 @param {{zoom: number; alpha: number}} */
@@ -335,7 +315,7 @@ function initGLTFLoader({
   /**@param {ProgressEvent<EventTarget>} evt */
   function onLoading(evt) { }
   const mm = Object.assign(manager, { onLoading })
-  return Object.assign(manager, {
+  return Object.assign(mm, {
     ktx2LoaderDetectSupport,
     /**
      * @param {string} gltfUrl 
