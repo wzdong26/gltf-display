@@ -80,7 +80,6 @@ export class Viewer {
     this.scene = new Scene()
     this.camera = new PerspectiveCamera(fov ?? 75, 2, near ?? 0.1, far ?? 10000)
     this.renderer = new WebGLRenderer({ ...renderer, antialias: true, alpha: true })
-    this.renderer.setPixelRatio(window.devicePixelRatio)
     this.canvas = this.renderer.domElement
     this.controls = new OrbitControls(this.camera, this.canvas)
     this.controls.addEventListener('change', this.render.bind(this))
@@ -89,25 +88,25 @@ export class Viewer {
     this.scene.add(this.light)
     GLTF_LOADER.ktx2LoaderDetectSupport(this.renderer)
   }
-  render = rafDebounce(({ delta }, { size } = {}) => {
-    this._resizeToDisplaySize(size)
+  render = rafDebounce(({ delta }, { pixelRatio } = {}) => {
+    this._resizeToDisplaySize(pixelRatio)
     this.controls.update()
     this._gltfState.mixer?.update(delta / 1000)
     this.renderer.render(this.scene, this.camera)
   })
   /**
    * @private
-   * @param {[width: number, height: number]} size 
+   * @param {number} pixelRatio 
    */
-  _resizeToDisplaySize(size) {
-    let { width, clientWidth, height, clientHeight } = this.canvas
-    if (size?.length === 2) {
-      [clientWidth, clientHeight] = size
-    }
-    const needResize = clientWidth !== width || clientHeight !== height
+  _resizeToDisplaySize(pixelRatio) {
+    const { width, clientWidth, height, clientHeight } = this.canvas
+    pixelRatio ??= window.devicePixelRatio
+    const newW = Math.ceil(clientWidth * pixelRatio)
+    const newH = Math.ceil(clientHeight * pixelRatio)
+    const needResize = newW !== width || newH !== height
     if (needResize) {
-      this.renderer.setSize(clientWidth, clientHeight, false)
-      this.camera.aspect = clientWidth / clientHeight
+      this.renderer.setSize(newW, newH, false)
+      this.camera.aspect = newW / newH
       this.camera.updateProjectionMatrix()
     }
     return needResize

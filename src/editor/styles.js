@@ -1,4 +1,6 @@
 import { onGLTFLoad } from '@lib/gltfDisplay'
+import ChevronsUpIcon from '/chevrons-up.svg?raw'
+import ChevronsDownIcon from '/chevrons-down.svg?raw'
 
   // =================== loading ===================
   ; (function createLoading() {
@@ -78,10 +80,10 @@ import { onGLTFLoad } from '@lib/gltfDisplay'
   ; (function showInfoBtn() {
     const infoPanelBtn = document.querySelector('.info-panel-btn')
     const infoPanel = document.querySelector('.gltf-info')
-    infoPanelBtn.innerHTML = infoPanel.hidden ? '∨' : '∧'
+    infoPanelBtn.innerHTML = infoPanel.hidden ? ChevronsDownIcon : ChevronsUpIcon
     infoPanelBtn.addEventListener('click', () => {
       infoPanel.hidden = !infoPanel.hidden
-      infoPanelBtn.innerHTML = infoPanel.hidden ? '∨' : '∧'
+      infoPanelBtn.innerHTML = infoPanel.hidden ? ChevronsDownIcon : ChevronsUpIcon
     })
   })()
 

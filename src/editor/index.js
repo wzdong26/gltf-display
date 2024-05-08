@@ -1,10 +1,10 @@
-
 import { Configurator, onGLTFLoad } from '@lib/gltfDisplay'
 import { readDirFiles } from '@lib/readDirFiles'
 import { saveBlob } from '@lib/saveBlob'
 import { validGLTF } from '@lib/validGLTF'
 import { GUI } from 'dat.gui'
 import { showInfo } from './styles'
+import './stats'
 import './index.css'
 
 const form = document.querySelector('form')
@@ -37,23 +37,24 @@ const { addScreenCaptureItem, addShareItem } = (function addBasicFolder() {
     }
   }, 'home')
 
+  const basicOptions = { imgPixelRatio: window.devicePixelRatio }
+
   let screenCaptureItem, shareItem
   return {
     addScreenCaptureItem() {
       screenCaptureItem && basicFolder.remove(screenCaptureItem)
       screenCaptureItem = basicFolder.add({
-        async screenCapture() {
+        async saveImg() {
           const { canvas } = viewer
-          const size = [2048, 2048]
-          await viewer.render(size)
-          if (canvas.width !== size[0] || canvas.height !== size[1])
-            await viewer.render({ size })
+          const { imgPixelRatio: pixelRatio } = basicOptions
+          await viewer.render({ pixelRatio })
           canvas.toBlob((blob) => {
             saveBlob(blob, `screencapture-${canvas.width}x${canvas.height}.png`)
             Promise.resolve().then(() => viewer.render())
           })
         }
-      }, 'screenCapture')
+      }, 'saveImg')
+      basicFolder.add(basicOptions, 'imgPixelRatio', 0.5, 3)
     },
     addShareItem(modelUrl) {
       shareItem && basicFolder.remove(shareItem)
