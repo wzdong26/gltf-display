@@ -89,15 +89,21 @@ export class Viewer {
     this.scene.add(this.light)
     GLTF_LOADER.ktx2LoaderDetectSupport(this.renderer)
   }
-  render = rafDebounce(({ delta }, ...args) => {
-    this._resizeToDisplaySize()
+  render = rafDebounce(({ delta }, { size } = {}) => {
+    this._resizeToDisplaySize(size)
     this.controls.update()
     this._gltfState.mixer?.update(delta / 1000)
     this.renderer.render(this.scene, this.camera)
   })
-  /**@private */
-  _resizeToDisplaySize() {
-    const { width, clientWidth, height, clientHeight } = this.canvas
+  /**
+   * @private
+   * @param {[width: number, height: number]} size 
+   */
+  _resizeToDisplaySize(size) {
+    let { width, clientWidth, height, clientHeight } = this.canvas
+    if (size?.length === 2) {
+      [clientWidth, clientHeight] = size
+    }
     const needResize = clientWidth !== width || clientHeight !== height
     if (needResize) {
       this.renderer.setSize(clientWidth, clientHeight, false)
