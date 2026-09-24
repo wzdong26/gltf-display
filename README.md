@@ -1,3 +1,5 @@
+
+
 # <img src="https://wzdong26.github.io/gltf-display/favicon.ico" width="32px"> glTF Display
 
 <center style="font-size: 20px">
@@ -92,7 +94,7 @@ gltf-display 采用 jsDoc 类型注解，保证在开发过程中舒适的代码
 ```typescript
 type ConstructorParameters<Configurator> = [
   {
-    container: Element; // canvas 的父容器
+    container?: Element; // canvas 的父容器
   }
 ];
 ```
